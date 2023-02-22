@@ -35,6 +35,9 @@ def lemmatize_sentence(text):
 
 
 def preprocess_text(text):
+    """
+        Preprocesses given dataset text from unnecessary chars
+    """
     text = text.lower()
     cleaned_text = clean_text(text)
     cleaned_text = strip_stopwords(cleaned_text)
@@ -43,8 +46,11 @@ def preprocess_text(text):
     return cleaned_text
 
 
-def imdb_ft_data_format(set_name, x, y):
-    with open(f"./data/imdb/imdb.{set_name}", 'w') as write_file:
+def convert_to_ft_data_format(dataset_name, set_name, x, y):
+    """
+        Converts data to fasttext input format
+    """
+    with open(f"./data/{dataset_name}/{dataset_name}.{set_name}", 'w') as write_file:
         y_lst = y.tolist()
 
         idx = 0
