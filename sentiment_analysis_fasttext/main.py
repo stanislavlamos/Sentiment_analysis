@@ -20,6 +20,11 @@ def preprocess_imdb_dataset():
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5, shuffle=True, random_state=1)
     X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.25, random_state=1, shuffle=True)
 
+    # utils.apply_vocab_length_to_series(X, "all", "IMDB")
+    # utils.apply_vocab_length_to_series(X_train, "train", "IMDB")
+    # utils.apply_vocab_length_to_series(X_val, "validation", "IMDB")
+    # utils.apply_vocab_length_to_series(X_test, "test", "IMDB")
+
     utils.convert_to_ft_data_format("imdb", "train", X_train, y_train)
     utils.convert_to_ft_data_format("imdb", "valid", X_val, y_val)
 
@@ -42,13 +47,25 @@ def preprocess_sentiment140_dataset():
     y = dataset['sentiment'].replace({0: "negative", 2: "neutral", 4: "positive"})
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, shuffle=True, random_state=1)
     X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.25, random_state=1, shuffle=True)
-#
+
+    # utils.apply_vocab_length_to_series(X, "all", "Sentiment140")
+    # utils.apply_vocab_length_to_series(X_train, "train", "Sentiment140")
+    # utils.apply_vocab_length_to_series(X_val, "validation", "Sentiment140")
+    # utils.apply_vocab_length_to_series(X_test, "test", "Sentiment140")
+
     utils.convert_to_ft_data_format("sentiment140", "train", X_train, y_train)
     utils.convert_to_ft_data_format("sentiment140", "valid", X_val, y_val)
 
     print("Sentiment140 dataset has been successfully preprocessed")
 
     return X_test, y_test
+
+
+def preprocess_rotten_tomatoes_dataset():
+    """
+        Preprocessing of reviews from rotten tomatoes dataset
+    """
+    pass
 
 
 def ft_classification(dataset_name, x_test):
@@ -92,6 +109,13 @@ def run_on_sentiment140():
     print(classification_report(y_test.tolist(), y_pred))
 
 
+def run_on_rotten_tomatoes():
+    """
+        Running fasttext classification on Rotten tomatoes dataset and printing classification report
+    """
+    pass
+
+
 if __name__ == '__main__':
-    #run_on_imdb()
+    # run_on_imdb()
     run_on_sentiment140()

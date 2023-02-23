@@ -58,3 +58,30 @@ def convert_to_ft_data_format(dataset_name, set_name, x, y):
             label = y_lst[idx]
             print(f"__label__{label} {text}", file=write_file)
             idx = idx + 1
+
+
+def apply_vocab_length_to_series(x, set_name, dataset_name):
+    """
+        Get vocab size from words in each sentence of the pandas series
+    """
+    vocab = []
+
+    for _, text in x.items():
+        vocab = get_vocabulary_length(text, vocab)
+
+    word_len_avg = sum(map(len, vocab)) / len(vocab)
+    print(f"Vocabulary length of {set_name} set in {dataset_name} dataset: {len(vocab)}")
+    print(f"Average word length of {set_name} set in {dataset_name} dataset: {word_len_avg}")
+
+
+def get_vocabulary_length(sentence, vocab):
+    """
+        Update vocabulary with words from input sentence
+    """
+    words = sentence.split()
+
+    for word in words:
+        if word not in vocab:
+            vocab.append(word)
+
+    return vocab
