@@ -1,5 +1,6 @@
 import fasttext
 from sklearn.metrics import classification_report
+from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 import pandas as pd
 import utils
@@ -65,7 +66,28 @@ def preprocess_rotten_tomatoes_dataset():
     """
         Preprocessing of reviews from rotten tomatoes dataset
     """
-    pass
+    print("Preprocessing Rotten Tomatoes dataset...")
+
+    cols = ['PhraseId', 'SentenceId', 'Phrase', 'Sentiment']
+    dataset = pd.read_csv("./data/rotten_tomatoes/train.tsv", sep='\t', names=cols)
+    dataset['Phrase'] = dataset['Phrase'].apply(utils.preprocess_text)
+
+    X = dataset['Phrase']
+    y = dataset['Sentiment']
+    X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.3, shuffle=True, random_state=1)
+
+    cols_test = ['PhraseId', 'SentenceId', 'Phrase']
+    dataset_test = pd.read_csv("./data/rotten_tomatoes/test.tsv", sep='\t', names=cols_test)
+    dataset_test['Phrase'] = dataset['Phrase'].apply(utils.preprocess_text)
+    X_test = dataset_test['Phrase']
+    ids = dataset_test['PhraseId']
+
+    utils.convert_to_ft_data_format("rotten_tomatoes", "train", X_train, y_train)
+    utils.convert_to_ft_data_format("rotten_tomatoes", "valid", X_val, y_val)
+
+    print("Rotten tomatoes dataset has been successfully preprocessed")
+
+    return X_test, ids
 
 
 def ft_classification(dataset_name, x_test):
@@ -74,8 +96,10 @@ def ft_classification(dataset_name, x_test):
     """
     print(f"Starting fasttext model training on {dataset_name} dataset")
 
+    # To successfully run on Rotten Tomatoes dataset add parameter  -autotuneModelSize="2G"
     model = fasttext.train_supervised(input=f"./data/{dataset_name}/{dataset_name}.train",
                                       autotuneValidationFile=f"./data/{dataset_name}/{dataset_name}.valid")
+
     samples_number_val, precision_val, recall_val = model.test(f"./data/{dataset_name}/{dataset_name}.valid")
     print(f"Number of validation samples: {samples_number_val}")
     print(f"Precision on validation set: {precision_val}")
@@ -98,6 +122,7 @@ def run_on_imdb():
     x_test, y_test = preprocess_imdb_dataset()
     y_pred = ft_classification("imdb", x_test)
     print(classification_report(y_test.tolist(), y_pred))
+    print(f"Accuracy score: {accuracy_score(y_test.tolist(), y_pred)}")
 
 
 def run_on_sentiment140():
@@ -107,15 +132,21 @@ def run_on_sentiment140():
     x_test, y_test = preprocess_sentiment140_dataset()
     y_pred = ft_classification("sentiment140", x_test)
     print(classification_report(y_test.tolist(), y_pred))
+    print(f"Accuracy score: {accuracy_score(y_test.tolist(), y_pred)}")
 
 
 def run_on_rotten_tomatoes():
     """
         Running fasttext classification on Rotten tomatoes dataset and printing classification report
     """
-    pass
+    x_test, ids = preprocess_rotten_tomatoes_dataset()
+    y_pred = ft_classification("rotten_tomatoes", x_test)
+
+    df = pd.DataFrame({"PhraseId": ids.tolist(), "Sentiment": y_pred})
+    df.to_csv("./data/rotten_tomatoes/kaggle_submission.csv", index=False)
 
 
 if __name__ == '__main__':
     # run_on_imdb()
     run_on_sentiment140()
+    # run_on_rotten_tomatoes()
