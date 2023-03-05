@@ -85,3 +85,10 @@ def get_vocabulary_length(sentence, vocab):
             vocab.append(word)
 
     return vocab
+
+
+def argmax(lst):
+    """
+        Get index of the maximum element from list
+    """
+    return lst.index(max(lst))
