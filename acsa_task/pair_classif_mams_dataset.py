@@ -4,7 +4,6 @@ import utils
 import MamsDataset
 from ft_classif import ft_classification_onelabel, ft_classification_multilabel
 from sklearn.metrics import accuracy_score, classification_report
-from lstm_classif import *
 from use_classif import *
 import time
 
@@ -85,23 +84,6 @@ def run_twostep_ft():
     print(f"Subset accuracy score: {accuracy_score(y_test_full_converted, y_pred_full_converted)}")
 
 
-def run_lstm():
-    mams_dataset = MamsDataset.Mams()
-
-    y_train = utils.convert_to_onehot(mams_dataset.y_train_full, mams_dataset.labels_mapping_dict,
-                                      mams_dataset.NUM_LABELS)
-    y_test = utils.convert_to_onehot(mams_dataset.y_test_full, mams_dataset.labels_mapping_dict,
-                                     mams_dataset.NUM_LABELS)
-    y_val = utils.convert_to_onehot(mams_dataset.y_val_full, mams_dataset.labels_mapping_dict, mams_dataset.NUM_LABELS)
-
-    X_train, vocab_size = tokenize_sentences(mams_dataset.X_train_full)
-    X_test, _ = tokenize_sentences(mams_dataset.X_test_full)
-    X_val, _ = tokenize_sentences(mams_dataset.X_val_full)
-
-    model = train_lstm_multilabel(vocab_size, mams_dataset.NUM_LABELS, X_train, y_train, X_val, y_val)
-    evaluate_lstm(model, X_test, y_test)
-
-
 def run_use():
     my_data = MamsDataset.Mams()
     y_preds_onehot = logistic_regression_categories(my_data.X_test_full, my_data.y_test_full, my_data.X_train_full,
@@ -130,7 +112,6 @@ if __name__ == "__main__":
     tracemalloc.start()
     # run_onestep_ft()
     run_twostep_ft()
-    # run_lstm()
     # run_use()
     elapsed_time = time.time() - start_time
     print(f"Time: {elapsed_time}")

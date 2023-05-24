@@ -2,7 +2,6 @@ import MamsDataset
 import utils
 from sklearn.metrics import classification_report, accuracy_score
 from ft_classif import ft_classification_multilabel
-from lstm_classif import tokenize_sentences, train_lstm_multilabel, evaluate_lstm
 from use_classif import *
 import time
 import tracemalloc
@@ -34,24 +33,6 @@ def run_ft():
     print(classification_report(y_test_converted, y_pred_converted, target_names=target_names, zero_division=0))
     print(f"Multi label accuracy (a.k.a. Hamming score): {utils.hamming_score(y_test_converted, y_pred_converted)}")
     print(f"Subset accuracy score: {accuracy_score(y_test_converted, y_pred_converted)}")
-
-
-def run_lstm():
-    my_data = MamsDataset.Mams()
-    my_data.y_val_full = utils.delete_polarities(my_data.y_val_full)
-    my_data.y_train_full = utils.delete_polarities(my_data.y_train_full)
-    my_data.y_test_full = utils.delete_polarities(my_data.y_test_full)
-
-    y_train = utils.convert_to_onehot(my_data.y_train_full, my_data.categories_mapping_dict, my_data.NUM_CATEGORIES)
-    y_test = utils.convert_to_onehot(my_data.y_test_full, my_data.categories_mapping_dict, my_data.NUM_CATEGORIES)
-    y_val = utils.convert_to_onehot(my_data.y_val_full, my_data.categories_mapping_dict, my_data.NUM_CATEGORIES)
-
-    X_train, vocab_size = tokenize_sentences(my_data.X_train_full)
-    X_test, _ = tokenize_sentences(my_data.X_test_full)
-    X_val, _ = tokenize_sentences(my_data.X_val_full)
-
-    model = train_lstm_multilabel(vocab_size, my_data.NUM_CATEGORIES, X_train, y_train, X_val, y_val)
-    evaluate_lstm(model, X_test, y_test, 0.1, my_data.categories_mapping_dict)
 
 
 def run_use():
